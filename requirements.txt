@@ -1,4 +1,12 @@
 django
 transformers
 torch
+torchvision
 numpy
+djangorestframework
+markdown
+django-filter
+accelerate
+django-dotenv
+Pillow
+django-cors-headers
