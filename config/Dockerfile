@@ -8,7 +8,7 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-ENV DJANGO_SETTINGS_MODULE=config.setting
+ENV DJANGO_SETTINGS_MODULE=config.setting.py
 
 COPY . .
 
