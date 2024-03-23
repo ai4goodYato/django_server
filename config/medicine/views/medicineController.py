@@ -51,16 +51,19 @@ class MedicineController(APIView):
     def post(self, request):
         image = request.FILES.get("medicine", None)
         if image is None:
-            return Response(status=400)
+            return Response({
+                "status":400,
+                "message":"image not exist"
+            })
         
         # asyncIo로 비동기 함수 실행 + 결과 반환
         result = asyncio.run(classifyMedicineImage(image=image))
         # 이름 데이터가 없으면? : 400
         if not result['name']:
-            return Response(status=400)
+            return Response({"status":400, "message":"pill name not exist"})
         # api에서 정보 받아오는게 오래걸려서 비동기처리함
         res = asyncio.run(self.getMedicineApiInfo(result["name"]))
         # 데이터 잘못받았으면? : 400
         if res is None:
-            return Response(status=400)
+            return Response({"status":400, "message":"api data get failed"})
         return Response(res)
