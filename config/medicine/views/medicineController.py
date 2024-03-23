@@ -2,8 +2,11 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
 from ml.models.imageClassificationModel import classifyMedicineImage
+from ml.models.classifyPillImage import classifyPillImage
 from rest_framework.parsers import MultiPartParser, FormParser
-import asyncio, os, requests, aiohttp
+from PIL import Image
+from io import BytesIO
+import asyncio, os, aiohttp
 
 class MedicineController(APIView):
     parser_classes = [MultiPartParser, FormParser]
@@ -32,21 +35,27 @@ class MedicineController(APIView):
         return data
 
     async def getMethodRequest(self, url):
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
-                if response.status == 200: # 요청 성공
-                    return await response.json() # await 주의
-                else: # 요청 실패
-                    return None
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url) as response:
+                    if response.status == 200: # 요청 성공
+                        return await response.json() # await 주의
+                    else: # 요청 실패
+                        return None
+        except:
+            return None
                 
     async def getMedicineApiInfo(self, name):
-        urlPath = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList"
-        accessKey=os.environ.get("MEDICINE_IDENTIFY_ACCESS_KEY")
-        requestUrl=f"{urlPath}?serviceKey={accessKey}&itemName={name}&type=json"
-        medicineResponse = await self.getMethodRequest(requestUrl)
-        if not medicineResponse: return None
-        medicineResponse = medicineResponse["body"]["items"]
-        return list(map(self.processMedicineResponse, medicineResponse))
+        try:
+            urlPath = "http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList"
+            accessKey=os.environ.get("MEDICINE_IDENTIFY_ACCESS_KEY")
+            requestUrl=f"{urlPath}?serviceKey={accessKey}&itemName={name}&type=json"
+            medicineResponse = await self.getMethodRequest(requestUrl)
+            if not medicineResponse: return None
+            medicineResponse = medicineResponse["body"]["items"]
+            return list(map(self.processMedicineResponse, medicineResponse))
+        except:
+            return None
     
     def post(self, request):
         image = request.FILES.get("medicine", None)
@@ -55,9 +64,13 @@ class MedicineController(APIView):
                 "status":400,
                 "message":"image not exist"
             })
+        image = Image.open(BytesIO(image.read()))
+        if image.mode == "RGBA":
+            image = image.convert("RGB")
         
         # asyncIo로 비동기 함수 실행 + 결과 반환
-        result = asyncio.run(classifyMedicineImage(image=image))
+        # result = asyncio.run(classifyMedicineImage(image=image))
+        result = classifyPillImage(image)
         # 이름 데이터가 없으면? : 400
         if not result['name']:
             return Response({"status":400, "message":"pill name not exist"})
