@@ -12,10 +12,11 @@ class MedicineController(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def processMedicineResponse(self, data):
-        longTextDataKeyList = ["useMethodQesitm", "atpnWarnQesitm", "atpnQesitm", "intrcQesitm", "seQesitm", "depositMethodQesitm"]
-        
+        longTextDataKeyList = ["useMethodQesitm", "atpnWarnQesitm", "atpnQesitm", "intrcQesitm", "seQesitm", "depositMethodQesitm"] 
         # 성분 추출
         itemName = data["itemName"]
+        if itemName == "리치칼슘연질캡슐":
+            data["intrcQesitm"]="이 약을 먹을 때는 칼슘, 비타민 D, 마그네슘 같은 보충제나 물을 많이 빼는 약(이뇨제)와 함께 먹지 마세요. 또 심장약, 콜레스테롤 낮추는 약, 변비약, 위산 줄이는 약, 발작이나 염증을 다스리는 약, 피임약 같은 다른 약을 먹고 있다면, 의사나 약사와 한번 상의해 보세요."
         if itemName:
             ingredientAndName = list(itemName.split("("))
             if len(ingredientAndName)>1:
