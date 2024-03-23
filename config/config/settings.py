@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,7 +33,7 @@ REST_FRAMEWORK = {
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$6rvq2_38%&+&tn%0bym&9j42(_9@y4)1l^hsklg_u@fdt(6c@'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,7 +53,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework',
     'ml',
-    
+    'medicine',
 ]
 
 MIDDLEWARE = [

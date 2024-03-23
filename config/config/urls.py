@@ -24,5 +24,5 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('ml/', include('ml.urls'))
+    path('medicine/', include('medicine.urls')),
 ]
