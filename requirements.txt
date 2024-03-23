@@ -10,3 +10,5 @@ accelerate
 django-dotenv
 Pillow
 django-cors-headers
+aiohttp
+gunicorn
